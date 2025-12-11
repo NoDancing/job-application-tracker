@@ -153,6 +153,46 @@ def add_application(
     conn.commit()
     return cur.lastrowid
 
+def find_applications_by_company(
+    conn: sqlite3.Connection,
+    company_query: str,
+) -> List[Application]:
+    """
+    Find applications whose company name matches the given substring,
+    case-insensitively, ordered by most recent application date first.
+
+    Parameters:
+        company_query (str): Substring to match against the company name.
+
+    Returns:
+        List[Application]: Matching applications.
+    """
+    sql = """
+        SELECT *
+        FROM applications
+        WHERE LOWER(company) LIKE LOWER(?)
+        ORDER BY date_applied DESC, id DESC
+    """
+    cur = conn.cursor()
+    cur.execute(sql, (f"%{company_query}%",))
+    rows = cur.fetchall()
+
+    return [
+        Application(
+            id=row["id"],
+            company=row["company"],
+            role=row["role"],
+            job_link=row["job_link"],
+            location=row["location"],
+            date_applied=row["date_applied"],
+            source=row["source"],
+            status=row["status"],
+            last_action=row["last_action"],
+            priority=row["priority"],
+            notes=row["notes"],
+        )
+        for row in rows
+    ]
 
 def list_applications(
     conn: sqlite3.Connection,
@@ -356,6 +396,7 @@ def followups(conn: sqlite3.Connection, days: int) -> List[Application]:
         )
         for row in rows
     ]
+
 
 
 def export_applications_to_csv(

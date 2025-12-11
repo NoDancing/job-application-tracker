@@ -171,9 +171,12 @@ def parse_args() -> argparse.Namespace:
     # update-status
     p_update = subparsers.add_parser(
         "update-status",
-        help="Update status of an application by ID.",
+        help="Update status of an application by ID or company name.",
     )
-    p_update.add_argument("id", type=int, help="Application ID.")
+    p_update.add_argument(
+        "target",
+        help="Application ID (integer) OR substring of the company name.",
+    )
     p_update.add_argument("status", help="New pipeline status.")
     p_update.add_argument(
         "--last-action",
@@ -247,11 +250,40 @@ def main() -> None:
                 print_applications(apps)
 
         elif args.command == "update-status":
-            update_status(
-                conn=conn,
-                app_id=args.id,
-                status=args.status,
-                last_action=args.last_action,
-            )
+            # Try to interpret target as an integer ID first.
+            try:
+                app_id = int(args.target)
+                # Normal ID-based update
+                update_status(
+                    conn=conn,
+                    app_id=app_id,
+                    status=args.status,
+                    last_action=args.last_action,
+                )
+            except ValueError:
+                # Not an integer: treat as company-name query
+                from jobapp.db import find_applications_by_company  # top-level import is fine too
+
+                matches = find_applications_by_company(conn, args.target)
+
+                if not matches:
+                    print(f'No applications match company query "{args.target}".')
+                elif len(matches) > 1:
+                    print(f'Multiple applications match "{args.target}":')
+                    for app in matches:
+                        print(f"[{app.id}] {app.company} — {app.role} (applied {app.date_applied})")
+                    print("Please refine your query or use an explicit ID.")
+                else:
+                    app = matches[0]
+                    print(
+                        f'Updating application [{app.id}] {app.company} — {app.role} '
+                        f'to status "{args.status}".'
+                    )
+                    update_status(
+                        conn=conn,
+                        app_id=app.id,
+                        status=args.status,
+                        last_action=args.last_action,
+                    )
     finally:
         conn.close()
