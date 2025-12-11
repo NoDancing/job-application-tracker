@@ -2,41 +2,41 @@
 
 Well, the Fall term has come to an end, and it's time to desperately start applying to internships. This is a simple app I put together to avoid having to use a spreadsheet, and prove I can quickly put together a workable, shareable piece of software.
 
-**What it does:**  
+**What it does:**
 It keeps track of all the applications you've submitted in a clean, structured way, and makes it easy to review your pipeline, run simple analytics, or export everything to CSV.
 
-**How to use it:**  
+**How to use it:**
 The `CONVENTIONS.md` file is designed to be shared with an LLM. You can paste in a job description, and it will generate a clean `jobapp add ...` command that records the application in the database with consistent formatting.
 
-**What I'm demonstrating here:**  
-- Ability to design and build a small but well-structured CLI tool  
-- Clear separation between database logic, models, and command-line interface  
-- Use of SQLite for lightweight, durable data storage  
-- Modern Python packaging (`pyproject.toml`, console scripts)  
-- Meaningful test coverage and GitHub Actions CI  
-- Documentation and conventions that support automation and reproducibility  
+**What I'm demonstrating here:**
+- Ability to design and build a small but well-structured CLI tool
+- Clear separation between database logic, models, and command-line interface
+- Use of SQLite for lightweight, durable data storage
+- Modern Python packaging (`pyproject.toml`, console scripts)
+- Meaningful test coverage and GitHub Actions CI
+- Documentation and conventions that support automation and reproducibility
 
 JobApp is a command-line tool for managing job applications using a local SQLite database. It provides a structured and queryable workflow in place of ad-hoc spreadsheets, enabling consistent tracking, automation, and integration with developer tooling.
 
 The project is designed to support:
-- Fast and reliable data entry  
-- Zero external service dependencies  
-- Simple scripting and automation  
-- Consistent formats for LLM-generated commands  
+- Fast and reliable data entry
+- Zero external service dependencies
+- Simple scripting and automation
+- Consistent formats for LLM-generated commands
 - Local, portable storage (a single `applications.db` file)
 
 ---
 
 ## Features
 
-- Add new job applications with standardized fields  
-- Update application status and timeline events  
-- Search by keyword (company or role)  
-- Filter and list active applications  
-- Identify stale applications requiring follow-up  
-- Export all data to CSV for spreadsheet analysis  
-- Tested with `pytest`  
-- Extensible structure suitable for future automation or packaging  
+- Add new job applications with standardized fields
+- Update application status and timeline events
+- Search by keyword (company or role)
+- Filter and list active applications
+- Identify stale applications requiring follow-up
+- Export all data to CSV for spreadsheet analysis
+- Tested with `pytest`
+- Extensible structure suitable for future automation or packaging
 
 See **CONVENTIONS.md** for the authoritative definitions of statuses, priorities, dates, sources, and event formatting.
 
@@ -102,8 +102,8 @@ jobapp add \
 ```
 
 Default values:
-- `status = Applied`  
-- `priority = 2`  
+- `status = Applied`
+- `priority = 2`
 - `date_applied = today`
 
 ### Search
@@ -151,11 +151,11 @@ pytest -q
 ```
 
 The suite currently covers:
-- Record creation  
-- Filtering behavior  
-- Follow-up detection  
-- Status updates  
-- CSV export integrity  
+- Record creation
+- Filtering behavior
+- Follow-up detection
+- Status updates
+- CSV export integrity
 
 ---
 
@@ -176,11 +176,11 @@ Beyond being a useful personal tool, this project reflects my focus on clarity, 
 
 ## Planned Enhancements
 
-- Packaging with `pyproject.toml` and publishing to PyPI  
-- CLI-level integration tests  
-- Optional terminal UI or lightweight web dashboard  
-- Automated reminders (email or local notifications)  
-- Analytics features (conversion rates, timeline analysis)  
+- Packaging with `pyproject.toml` and publishing to PyPI
+- CLI-level integration tests
+- Optional terminal UI or lightweight web dashboard
+- Automated reminders (email or local notifications)
+- Analytics features (conversion rates, timeline analysis)
 
 ---
 
