@@ -186,4 +186,4 @@ Beyond being a useful personal tool, this project reflects my focus on clarity, 
 
 ## License
 
-Personal project; license to be determined.
+This project is released under the MIT License. See the `LICENSE` file for full terms.
