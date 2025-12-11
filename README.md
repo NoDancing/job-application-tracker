@@ -1,83 +1,90 @@
+# JobApp — Structured Job Application Tracker (CLI + SQLite)
 
+[![Build Status](https://github.com/USERNAME/REPO/actions/workflows/tests.yml/badge.svg)](https://github.com/USERNAME/REPO/actions)
+[![Test Coverage](https://img.shields.io/codecov/c/github/USERNAME/REPO)](https://app.codecov.io/gh/USERNAME/REPO)
+[![License](https://img.shields.io/github/license/USERNAME/REPO)](https://github.com/USERNAME/REPO/blob/main/LICENSE)
+[![Python Versions](https://img.shields.io/pypi/pyversions/jobapp)](https://pypi.org/project/jobapp/)
+[![PyPI Version](https://img.shields.io/pypi/v/jobapp.svg)](https://pypi.org/project/jobapp/)
 
-# JobApp — A Structured Job Application Tracker (CLI + SQLite)
+> Replace `USERNAME` and `REPO` in the badge URLs above with the actual GitHub username and repository name once this project is hosted on GitHub. The PyPI badges will become accurate once the project is published to PyPI.
 
-JobApp is a lightweight command-line tool that manages a local SQLite database of your job applications. It replaces ad-hoc spreadsheets with a consistent, queryable, automatable structure.
+JobApp is a command-line tool for managing job applications using a local SQLite database. It provides a structured and queryable workflow in place of ad-hoc spreadsheets, enabling consistent tracking, automation, and integration with developer tooling.
 
-This tool is designed for:
-- Fast data entry
-- Zero-dependency local storage
-- Easy scripting and automation
-- Use with LLMs (via standardized conventions)
-
-All data is stored in a single SQLite file (`applications.db` by default).
+The project is designed to support:
+- Fast and reliable data entry  
+- Zero external service dependencies  
+- Simple scripting and automation  
+- Consistent formats for LLM-generated commands  
+- Local, portable storage (a single `applications.db` file)
 
 ---
 
 ## Features
 
-- Add new applications with structured fields
-- Update statuses and record timeline events
-- Search applications by keyword
-- List active applications or filter by status/company
-- Identify follow-up candidates based on age
-- Export to CSV for spreadsheet use
-- Fully tested with pytest
-- Built to support automation (LLM-friendly)
+- Add new job applications with standardized fields  
+- Update application status and timeline events  
+- Search by keyword (company or role)  
+- Filter and list active applications  
+- Identify stale applications requiring follow-up  
+- Export all data to CSV for spreadsheet analysis  
+- Tested with `pytest`  
+- Extensible structure suitable for future automation or packaging  
 
-See **CONVENTIONS.md** for standardized vocabularies and formats used by all commands.
+See **CONVENTIONS.md** for the authoritative definitions of statuses, priorities, dates, sources, and event formatting.
 
 ---
 
 ## Project Structure
 
-```
+```text
 app_database/
 ├─ jobapp/
 │   ├─ __init__.py
-│   ├─ cli.py          # CLI interface (argparse)
-│   ├─ db.py           # Database layer and queries
-│   ├─ models.py       # Application dataclass
+│   ├─ cli.py          # CLI entry point
+│   ├─ db.py           # SQLite access layer
+│   ├─ models.py       # Application dataclass definitions
 │
 ├─ tests/
-│   ├─ conftest.py     # pytest fixtures
+│   ├─ conftest.py     # Test fixtures and temporary DB harness
 │   ├─ test_db_basic.py
 │
-├─ CONVENTIONS.md      # Rules for status, priority, sources, etc.
-├─ README.md           # This file
-└─ applications.db     # Auto-created at runtime (ignored until you add data)
+├─ CONVENTIONS.md      # Required formatting rules for data entry
+├─ README.md
+└─ applications.db     # Generated at runtime (not version-controlled)
 ```
 
 ---
 
 ## Installation (Development Mode)
 
-Install the CLI as an editable package:
+Install as an editable package (recommended during development):
 
-```
+```bash
 pip install -e .
 ```
 
-Alternatively, use a manual symlink:
+Alternatively, install via a manual symlink:
 
-```
+```bash
 ln -s /path/to/jobapp/cli.py ~/bin/jobapp
 chmod +x ~/bin/jobapp
 ```
+
+Ensure `~/bin` is on your `PATH`.
 
 ---
 
 ## Usage
 
-### Initialize a New Database
+### Initialize a Database
 
-```
+```bash
 jobapp init
 ```
 
-### Add a New Application
+### Add an Application
 
-```
+```bash
 jobapp add \
   --company "Flatiron Institute" \
   --role "Database & Testing Intern" \
@@ -86,20 +93,20 @@ jobapp add \
   --notes "HPC benchmarking; strong alignment with systems background."
 ```
 
-Defaults:
-- `status = Applied`
-- `priority = 2`
+Default values:
+- `status = Applied`  
+- `priority = 2`  
 - `date_applied = today`
 
 ### Search
 
-```
+```bash
 jobapp search flatiron
 ```
 
 ### List
 
-```
+```bash
 jobapp list --active-only
 jobapp list --status "Interview"
 jobapp list --company "Panic"
@@ -107,66 +114,53 @@ jobapp list --company "Panic"
 
 ### Update Status
 
-```
+```bash
 jobapp update-status 12 "Interview" \
   --last-action "2025-12-18 — Scheduled technical screen"
 ```
 
-### Follow-ups
+### Follow-Up Recommendations
 
-```
+```bash
 jobapp followups --days 10
 ```
 
 ### Export to CSV
 
-```
+```bash
 jobapp export all_apps.csv
 jobapp export active_apps.csv --active-only
 ```
 
 ---
 
-## Conventions
+## Testing
 
-All commands adhere to the rules defined in **CONVENTIONS.md**, including:
+Execute the test suite:
 
-- Allowed status values
-- Priority scale
-- Source vocabulary
-- ISO date formats
-- Structured `last_action` entries
-- Notes format
-
-These conventions ensure consistency and allow LLMs or scripts to construct correct commands.
-
----
-
-## Running Tests
-
-```
+```bash
 pytest -q
 ```
 
-Tests cover:
-- Adding applications
-- Listing & filtering
-- Follow-up logic
-- Status updates
-- CSV exports
+The suite currently covers:
+- Record creation  
+- Filtering behavior  
+- Follow-up detection  
+- Status updates  
+- CSV export integrity  
 
 ---
 
-## Future Extensions
+## Planned Enhancements
 
-- PyPI packaging (`pyproject.toml`)
-- CLI-level tests
-- TUI or minimal web dashboard
-- Automatic reminders
-- Resume & keyword analytics
+- Packaging with `pyproject.toml` and publishing to PyPI  
+- CLI-level integration tests  
+- Optional terminal UI or lightweight web dashboard  
+- Automated reminders (email or local notifications)  
+- Analytics features (conversion rates, timeline analysis)  
 
 ---
 
 ## License
 
-Personal project; license TBD.
+Personal project; license to be determined.
