@@ -8,9 +8,81 @@ from jobapp.db import (
     followups,
     update_status,
     export_applications_to_csv,
+    search_applications,
 )
 from jobapp.models import Application
 
+def test_search_applications_matches_company_and_role(conn) -> None:
+    """
+    search_applications() should match on both company and role substrings,
+    case-insensitively.
+    """
+    # Seed data
+    add_application(
+        conn=conn,
+        company="Flatiron Institute",
+        role="Database & Testing Intern",
+        job_link=None,
+        location="New York, NY",
+        date_applied="2025-01-01",
+        source="Company Site",
+        status="Applied",
+        priority=1,
+        notes=None,
+    )
+    add_application(
+        conn=conn,
+        company="Some Tools Company",
+        role="Flatiron Tools Engineer",
+        job_link=None,
+        location=None,
+        date_applied="2025-01-02",
+        source="LinkedIn",
+        status="Applied",
+        priority=2,
+        notes=None,
+    )
+    add_application(
+        conn=conn,
+        company="OtherCo",
+        role="Backend Intern",
+        job_link=None,
+        location=None,
+        date_applied="2025-01-03",
+        source="Handshake",
+        status="Applied",
+        priority=2,
+        notes=None,
+    )
+
+    results = search_applications(conn=conn, query="flatiron")
+    assert len(results) == 2
+    companies = {app.company for app in results}
+    roles = {app.role for app in results}
+    assert "Flatiron Institute" in companies
+    assert any("Flatiron" in r for r in roles)
+
+def test_update_status_nonexistent_id_does_not_crash(conn, capsys) -> None:
+    """
+    update_status() should not crash when given a non-existent ID and should
+    print a helpful message instead.
+    """
+    # no rows inserted, so ID 999 should not exist
+    update_status(
+        conn=conn,
+        app_id=999,
+        status="Rejected",
+        last_action="2025-01-01 — Testing nonexistent ID",
+    )
+
+    captured = capsys.readouterr()
+    assert "No application with ID 999 exists." in captured.out
+
+    # Still no rows in DB
+    cur = conn.cursor()
+    cur.execute("SELECT COUNT(*) AS c FROM applications")
+    row = cur.fetchone()
+    assert row["c"] == 0
 
 def test_add_and_list_basic(conn) -> None:
     """

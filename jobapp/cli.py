@@ -139,12 +139,12 @@ def parse_args() -> argparse.Namespace:
     # export
     p_export = subparsers.add_parser(
         "export",
-        help ="Export applications to a CSV file.",
+        help="Export applications to a CSV file.",
     )
 
     p_export.add_argument(
-    "filepath",
-    help="Destination CSV file path.",
+        "filepath",
+        help="Destination CSV file path.",
     )
 
     p_export.add_argument(
@@ -155,7 +155,7 @@ def parse_args() -> argparse.Namespace:
 
     # stats
     subparsers.add_parser("stats", help="Show counts by status.")
-    
+
     # followups
     p_follow = subparsers.add_parser(
         "followups",
@@ -181,6 +181,7 @@ def parse_args() -> argparse.Namespace:
     )
 
     return parser.parse_args()
+
 
 def main() -> None:
     """
@@ -221,7 +222,7 @@ def main() -> None:
                 active_only=args.active_only,
             )
             print_applications(apps)
-        
+
         elif args.command == "search":
             apps = search_applications(conn, query=args.query)
             print_applications(apps)

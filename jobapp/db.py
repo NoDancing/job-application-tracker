@@ -76,6 +76,7 @@ def init_db(conn: sqlite3.Connection) -> None:
 
     conn.commit()
 
+
 def run_init(db_path: Path) -> None:
     """
     Ensure that the job application database exists at `db_path`
@@ -96,6 +97,7 @@ def run_init(db_path: Path) -> None:
         print(f"Database already existed at {db_path}. Ensured schema is up to date.")
     else:
         print(f"Initialized new database at {db_path}.")
+
 
 def add_application(
     conn: sqlite3.Connection,
@@ -136,7 +138,17 @@ def add_application(
             (company, role, job_link, location, date_applied, source, status, priority, notes)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
-        (company, role, job_link, location, date_applied, source, status, priority, notes),
+        (
+            company,
+            role,
+            job_link,
+            location,
+            date_applied,
+            source,
+            status,
+            priority,
+            notes,
+        ),
     )
     conn.commit()
     return cur.lastrowid
@@ -196,6 +208,7 @@ def list_applications(
         for row in rows
     ]
 
+
 def search_applications(
     conn: sqlite3.Connection,
     query: str,
@@ -241,6 +254,7 @@ def search_applications(
         )
         for row in rows
     ]
+
 
 def update_status(
     conn: sqlite3.Connection,
@@ -342,6 +356,7 @@ def followups(conn: sqlite3.Connection, days: int) -> List[Application]:
         )
         for row in rows
     ]
+
 
 def export_applications_to_csv(
     conn: sqlite3.Connection,
