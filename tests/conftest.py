@@ -1,8 +1,8 @@
 # tests/conftest.py
-from pathlib import Path
-from typing import Iterator
 import sqlite3
 import sys
+from pathlib import Path
+from typing import Iterator
 
 import pytest
 

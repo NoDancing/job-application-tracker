@@ -4,7 +4,7 @@ Date: 2025-12-10
 
 ## Overview
 
-JobApp is a small, SQLite-backed CLI for tracking software engineering job applications.  
+JobApp is a small, SQLite-backed CLI for tracking software engineering job applications.
 It has been refactored from a single script into a structured Python package with a clear separation of concerns.
 
 ## Current Architecture

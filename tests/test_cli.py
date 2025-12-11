@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 
 from jobapp import cli
-from jobapp.db import get_connection, init_db, add_application, list_applications
+from jobapp.db import add_application, get_connection, init_db, list_applications
 
 
 def test_cli_update_status_by_company_name(tmp_path: Path, capsys) -> None:
@@ -56,7 +56,9 @@ def test_cli_update_status_by_company_name(tmp_path: Path, capsys) -> None:
     # Verify the row in the DB was actually updated
     conn = get_connection(db_path)
     try:
-        apps = list_applications(conn, company="Flatiron", status=None, active_only=False)
+        apps = list_applications(
+            conn, company="Flatiron", status=None, active_only=False
+        )
         assert len(apps) == 1
         app = apps[0]
         assert app.company == "Flatiron Institute"
@@ -126,7 +128,6 @@ def test_cli_update_by_id_edits_selected_fields(tmp_path: Path, capsys) -> None:
         conn.close()
 
 
-
 def test_cli_update_by_company_name_edits_unique_match(tmp_path: Path, capsys) -> None:
     """`jobapp update <company_substring> ...` should resolve a unique company
     match and update that record when there is exactly one matching application.
@@ -170,7 +171,9 @@ def test_cli_update_by_company_name_edits_unique_match(tmp_path: Path, capsys) -
     # Verify DB contents
     conn = get_connection(db_path)
     try:
-        apps = list_applications(conn, company="Flatiron", status=None, active_only=False)
+        apps = list_applications(
+            conn, company="Flatiron", status=None, active_only=False
+        )
         assert len(apps) == 1
         app = apps[0]
         assert app.company == "Flatiron Institute"
@@ -178,7 +181,6 @@ def test_cli_update_by_company_name_edits_unique_match(tmp_path: Path, capsys) -
         assert app.priority == 1
     finally:
         conn.close()
-
 
 
 def test_cli_update_ambiguous_company_refuses_to_guess(tmp_path: Path, capsys) -> None:

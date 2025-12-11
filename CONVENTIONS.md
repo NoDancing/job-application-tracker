@@ -114,6 +114,30 @@ Pattern:
 
 Where `<Status>` is one of the allowed status values.
 
+### 7.3 Update any application fields
+
+Use the general-purpose update command when modifying fields other than status.
+
+Pattern:
+
+`jobapp update <ID or company-substring> \
+  [--company "<New Company>"] \
+  [--role "<New Role>"] \
+  [--link "<New URL>"] \
+  [--location "<New Location>"] \
+  [--date-applied YYYY-MM-DD] \
+  [--source "<Source>"] \
+  [--status "<Status>"] \
+  [--priority <1|2|3>] \
+  [--notes "<short context>"]`
+
+Rules:
+
+- `<ID>` is preferred when known.  
+- If `<company-substring>` is used and matches exactly one application, it is accepted.  
+- If multiple applications match, the command must refuse to proceed.  
+- Only the fields explicitly passed via flags will be updated; all others remain unchanged.
+
 ---
 
 ## 8. Search Guidance for LLMs
@@ -128,6 +152,7 @@ When generating `jobapp` commands:
 - Use ISO dates (`YYYY-MM-DD`) for `date-applied` and within `last_action`.
 - Use the `last_action` format verbatim.
 - Prefer explicit, single-purpose commands over complex or ambiguous ones.
+- When generating `update` commands, include only the fields that should change; never re-specify unchanged fields.
 
 ---
 
