@@ -23,6 +23,8 @@ from .db import (
     followups,
     update_status,
     run_init,
+    search_applications,
+    export_applications_to_csv,
 )
 from .models import Application
 
@@ -93,6 +95,16 @@ def parse_args() -> argparse.Namespace:
         help="Initialize the job application database at the selected path.",
     )
 
+    # search
+    p_search = subparsers.add_parser(
+        "search",
+        help="Search applications by substring in company, role, or notes.",
+    )
+    p_search.add_argument(
+        "query",
+        help="Search string (case-insensitive).",
+    )
+
     # add
     p_add = subparsers.add_parser("add", help="Add a new job application.")
     p_add.add_argument("--company", required=True)
@@ -122,6 +134,23 @@ def parse_args() -> argparse.Namespace:
         "--active-only",
         action="store_true",
         help="Exclude Rejected, Ghosted, and Withdrawn applications.",
+    )
+
+    # export
+    p_export = subparsers.add_parser(
+        "export",
+        help ="Export applications to a CSV file.",
+    )
+
+    p_export.add_argument(
+    "filepath",
+    help="Destination CSV file path.",
+    )
+
+    p_export.add_argument(
+        "--active-only",
+        action="store_true",
+        help="Only export non-rejected / non-ghosted / non-withdrawn applications.",
     )
 
     # stats
@@ -192,6 +221,18 @@ def main() -> None:
                 active_only=args.active_only,
             )
             print_applications(apps)
+        
+        elif args.command == "search":
+            apps = search_applications(conn, query=args.query)
+            print_applications(apps)
+
+        elif args.command == "export":
+            count = export_applications_to_csv(
+                conn=conn,
+                filepath=args.filepath,
+                active_only=args.active_only,
+            )
+            print(f"Exported {count} applications to {args.filepath}")
 
         elif args.command == "stats":
             stats_by_status(conn)

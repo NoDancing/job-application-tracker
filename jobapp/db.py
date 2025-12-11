@@ -10,6 +10,7 @@ This module is responsible for:
 """
 
 import sqlite3
+import csv
 from datetime import date
 from pathlib import Path
 from typing import List, Optional, Tuple
@@ -240,6 +241,7 @@ def search_applications(
         )
         for row in rows
     ]
+
 def update_status(
     conn: sqlite3.Connection,
     app_id: int,
@@ -340,3 +342,53 @@ def followups(conn: sqlite3.Connection, days: int) -> List[Application]:
         )
         for row in rows
     ]
+
+def export_applications_to_csv(
+    conn: sqlite3.Connection,
+    filepath: str,
+    active_only: bool = False,
+) -> int:
+    """
+    Export applications to a CSV file.
+
+    Parameters:
+        conn (sqlite3.Connection): Open database connection.
+        filepath (str): Destination CSV path.
+        active_only (bool): If True, exclude Rejected/Ghosted/Withdrawn.
+
+    Returns:
+        int: Number of rows exported.
+    """
+    sql = "SELECT * FROM applications"
+    params: Tuple = ()
+
+    if active_only:
+        sql += " WHERE status NOT IN ('Rejected', 'Ghosted', 'Withdrawn')"
+
+    sql += " ORDER BY date_applied DESC, id DESC"
+
+    cur = conn.cursor()
+    cur.execute(sql, params)
+    rows = cur.fetchall()
+
+    fieldnames = [
+        "id",
+        "company",
+        "role",
+        "job_link",
+        "location",
+        "date_applied",
+        "source",
+        "status",
+        "last_action",
+        "priority",
+        "notes",
+    ]
+
+    with open(filepath, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        for row in rows:
+            writer.writerow({name: row[name] for name in fieldnames})
+
+    return len(rows)

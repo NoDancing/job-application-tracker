@@ -1,0 +1,4 @@
+id,company,role,job_link,location,date_applied,source,status,last_action,priority,notes
+3,Some Startup,Backend Intern,,,2025-12-10,,Applied,,2,"Rust, async, networking"
+2,Google,Software Engineering Intern,,,2025-12-10,,Applied,,2,SRE-ish
+1,Flatiron Institute,Database & Testing Intern,,,2025-12-10,,Applied,,2,HPC benchmarks
