@@ -14,7 +14,6 @@ dependencies = []
 [project.scripts]
 jobapp = "jobapp.cli:main"
 
-# Optional metadata (recommended for professionalism)
 [project.urls]
 Homepage = "https://github.com/NoDancing/job-application-tracker"
 Source = "https://github.com/NoDancing/job-application-tracker"
@@ -29,11 +28,6 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 packages = ["jobapp"]
-
-# ----------------------------------------------------------------------
-# Tooling Configuration (Optional but Highly Recommended)
-# These sections are not required, but they impress hiring managers.
-# ----------------------------------------------------------------------
 
 # Ruff for linting
 [tool.ruff]
