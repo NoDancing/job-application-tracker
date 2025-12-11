@@ -71,9 +71,7 @@ def parse_args() -> argparse.Namespace:
         stats          Show summary statistics grouped by status.
         followups      Identify stale applications needing follow-up.
         update-status  Update an application's status and optional last_action.
-
-    Returns:
-        argparse.Namespace: Parsed CLI arguments.
+        update         Update one or more fields of an application by ID or company name.
     """
     parser = argparse.ArgumentParser(
         prog="jobapp",
@@ -183,6 +181,25 @@ def parse_args() -> argparse.Namespace:
         help="Explanation of the update (e.g., 'Scheduled phone screen').",
     )
 
+    # update (general field editing)
+    p_update_app = subparsers.add_parser(
+        "update",
+        help="Update one or more fields of an application by ID or company name.",
+    )
+    p_update_app.add_argument(
+        "target",
+        help="Application ID (integer) OR substring of the company name.",
+    )
+    p_update_app.add_argument("--company")
+    p_update_app.add_argument("--role")
+    p_update_app.add_argument("--link", dest="job_link")
+    p_update_app.add_argument("--location")
+    p_update_app.add_argument("--date-applied")
+    p_update_app.add_argument("--source")
+    p_update_app.add_argument("--status")
+    p_update_app.add_argument("--priority", type=int)
+    p_update_app.add_argument("--notes")
+
     return parser.parse_args()
 
 
@@ -285,5 +302,80 @@ def main() -> None:
                         status=args.status,
                         last_action=args.last_action,
                     )
+        elif args.command == "update":
+            # Determine the application ID: try integer first, otherwise resolve by company name.
+            try:
+                app_id = int(args.target)
+                cur = conn.cursor()
+                cur.execute("SELECT * FROM applications WHERE id = ?", (app_id,))
+                row = cur.fetchone()
+                if row is None:
+                    print(f"No application with ID {app_id} exists.")
+                    return
+            except ValueError:
+                from jobapp.db import find_applications_by_company
+
+                matches = find_applications_by_company(conn, args.target)
+
+                if not matches:
+                    print(f'No applications match company query "{args.target}".')
+                    return
+                if len(matches) > 1:
+                    print(f'Multiple applications match "{args.target}":')
+                    for app in matches:
+                        print(
+                            f"[{app.id}] {app.company} — {app.role} (applied {app.date_applied})"
+                        )
+                    print("Please refine your query or use an explicit ID.")
+                    return
+
+                app = matches[0]
+                app_id = app.id
+                row = {
+                    "id": app.id,
+                    "company": app.company,
+                    "role": app.role,
+                }
+
+            # Collect fields to update from provided arguments
+            fields = {}
+            if getattr(args, "company", None) is not None:
+                fields["company"] = args.company
+            if getattr(args, "role", None) is not None:
+                fields["role"] = args.role
+            if getattr(args, "job_link", None) is not None:
+                fields["job_link"] = args.job_link
+            if getattr(args, "location", None) is not None:
+                fields["location"] = args.location
+            if getattr(args, "date_applied", None) is not None:
+                fields["date_applied"] = args.date_applied
+            if getattr(args, "source", None) is not None:
+                fields["source"] = args.source
+            if getattr(args, "status", None) is not None:
+                fields["status"] = args.status
+            if getattr(args, "priority", None) is not None:
+                fields["priority"] = args.priority
+            if getattr(args, "notes", None) is not None:
+                fields["notes"] = args.notes
+
+            if not fields:
+                print("No fields specified to update; nothing to do.")
+                return
+
+            # Print context before applying update
+            print(
+                f'Updating application [{row["id"]}] {row["company"]} — {row["role"]} '
+                f"with updated fields: {', '.join(fields.keys())}."
+            )
+
+            # Apply the partial update with a dynamic UPDATE statement
+            assignments = ", ".join(f"{col} = ?" for col in fields.keys())
+            params = list(fields.values()) + [app_id]
+            cur = conn.cursor()
+            cur.execute(
+                f"UPDATE applications SET {assignments} WHERE id = ?",
+                params,
+            )
+            conn.commit()
     finally:
         conn.close()
