@@ -49,5 +49,11 @@ Thumbs.db
 .coverage
 htmlcov/
 
-# Database
-applications.db
+# Static analysis / type checking caches
+.mypy_cache/
+.ruff_cache/
+
+# General SQLite artifacts
+*.db
+*.sqlite
+*.sqlite3
