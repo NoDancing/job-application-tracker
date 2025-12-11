@@ -16,9 +16,9 @@ jobapp = "jobapp.cli:main"
 
 # Optional metadata (recommended for professionalism)
 [project.urls]
-Homepage = "https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME"
-Source = "https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME"
-Issues = "https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME/issues"
+Homepage = "https://github.com/NoDancing/job-application-tracker"
+Source = "https://github.com/NoDancing/job-application-tracker"
+Issues = "https://github.com/NoDancing/job-application-tracker/issues"
 
 # ----------------------------------------------------------------------
 # Build backend (standard modern Python packaging)

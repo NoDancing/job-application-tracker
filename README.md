@@ -1,13 +1,5 @@
 # JobApp — Structured Job Application Tracker (CLI + SQLite)
 
-[![Build Status](https://github.com/USERNAME/REPO/actions/workflows/tests.yml/badge.svg)](https://github.com/USERNAME/REPO/actions)
-[![Test Coverage](https://img.shields.io/codecov/c/github/USERNAME/REPO)](https://app.codecov.io/gh/USERNAME/REPO)
-[![License](https://img.shields.io/github/license/USERNAME/REPO)](https://github.com/USERNAME/REPO/blob/main/LICENSE)
-[![Python Versions](https://img.shields.io/pypi/pyversions/jobapp)](https://pypi.org/project/jobapp/)
-[![PyPI Version](https://img.shields.io/pypi/v/jobapp.svg)](https://pypi.org/project/jobapp/)
-
-> Replace `USERNAME` and `REPO` in the badge URLs above with the actual GitHub username and repository name once this project is hosted on GitHub. The PyPI badges will become accurate once the project is published to PyPI.
-
 JobApp is a command-line tool for managing job applications using a local SQLite database. It provides a structured and queryable workflow in place of ad-hoc spreadsheets, enabling consistent tracking, automation, and integration with developer tooling.
 
 The project is designed to support:
@@ -148,6 +140,21 @@ The suite currently covers:
 - Follow-up detection  
 - Status updates  
 - CSV export integrity  
+
+---
+
+## Why I Built This
+
+I wanted a structured and automatable alternative to the spreadsheets I used to track job applications. Building JobApp gave me the opportunity to practice several engineering skills in a contained, end-to-end project:
+
+- Designing a small but well-structured CLI tool
+- Building a normalized SQLite schema and data-access layer
+- Separating concerns across modules (models, DB logic, CLI)
+- Writing tests around data operations and behaviors
+- Using modern Python packaging (`pyproject.toml`, console scripts)
+- Establishing conventions suitable for AI-assisted workflows
+
+Beyond being a useful personal tool, this project reflects my focus on clarity, reproducibility, and maintainability in real-world development workflows.
 
 ---
 
