@@ -1,16 +1,17 @@
 # tests/test_db_basic.py
-from pathlib import Path
 import csv
+from pathlib import Path
 
 from jobapp.db import (
     add_application,
-    list_applications,
-    followups,
-    update_status,
     export_applications_to_csv,
+    followups,
+    list_applications,
     search_applications,
+    update_status,
 )
 from jobapp.models import Application
+
 
 def test_search_applications_matches_company_and_role(conn) -> None:
     """
@@ -62,6 +63,7 @@ def test_search_applications_matches_company_and_role(conn) -> None:
     assert "Flatiron Institute" in companies
     assert any("Flatiron" in r for r in roles)
 
+
 def test_update_status_nonexistent_id_does_not_crash(conn, capsys) -> None:
     """
     update_status() should not crash when given a non-existent ID and should
@@ -83,6 +85,7 @@ def test_update_status_nonexistent_id_does_not_crash(conn, capsys) -> None:
     cur.execute("SELECT COUNT(*) AS c FROM applications")
     row = cur.fetchone()
     assert row["c"] == 0
+
 
 def test_add_and_list_basic(conn) -> None:
     """
@@ -146,7 +149,9 @@ def test_list_filters_active_only(conn) -> None:
     )
 
     all_apps = list_applications(conn, company=None, status=None, active_only=False)
-    active_only_apps = list_applications(conn, company=None, status=None, active_only=True)
+    active_only_apps = list_applications(
+        conn, company=None, status=None, active_only=True
+    )
 
     assert len(all_apps) == 2
     # Only the non-rejected one should remain when active_only=True

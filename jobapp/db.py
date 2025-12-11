@@ -9,8 +9,8 @@ This module is responsible for:
   - Basic reporting queries (stats, followups)
 """
 
-import sqlite3
 import csv
+import sqlite3
 from datetime import date
 from pathlib import Path
 from typing import List, Optional, Tuple
@@ -135,7 +135,8 @@ def add_application(
     cur.execute(
         """
         INSERT INTO applications
-            (company, role, job_link, location, date_applied, source, status, priority, notes)
+            (company, role, job_link, location, date_applied, source, status,
+             priority, notes)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
@@ -152,6 +153,7 @@ def add_application(
     )
     conn.commit()
     return cur.lastrowid
+
 
 def find_applications_by_company(
     conn: sqlite3.Connection,
@@ -193,6 +195,7 @@ def find_applications_by_company(
         )
         for row in rows
     ]
+
 
 def list_applications(
     conn: sqlite3.Connection,
@@ -396,7 +399,6 @@ def followups(conn: sqlite3.Connection, days: int) -> List[Application]:
         )
         for row in rows
     ]
-
 
 
 def export_applications_to_csv(

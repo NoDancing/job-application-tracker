@@ -8,6 +8,5 @@ minimal wrapper, while the actual logic lives in the `jobapp` package.
 
 from jobapp.cli import main
 
-
 if __name__ == "__main__":
     main()

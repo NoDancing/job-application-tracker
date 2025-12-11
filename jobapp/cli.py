@@ -15,16 +15,16 @@ from typing import List
 
 from .db import (
     DEFAULT_DB_PATH,
+    add_application,
+    export_applications_to_csv,
+    followups,
     get_connection,
     init_db,
-    add_application,
     list_applications,
-    stats_by_status,
-    followups,
-    update_status,
     run_init,
     search_applications,
-    export_applications_to_csv,
+    stats_by_status,
+    update_status,
 )
 from .models import Application
 
@@ -71,7 +71,7 @@ def parse_args() -> argparse.Namespace:
         stats          Show summary statistics grouped by status.
         followups      Identify stale applications needing follow-up.
         update-status  Update an application's status and optional last_action.
-        update         Update one or more fields of an application by ID or company name.
+        update         Update fields of an application by ID or company name.
     """
     parser = argparse.ArgumentParser(
         prog="jobapp",
@@ -279,7 +279,9 @@ def main() -> None:
                 )
             except ValueError:
                 # Not an integer: treat as company-name query
-                from jobapp.db import find_applications_by_company  # top-level import is fine too
+                from jobapp.db import (
+                    find_applications_by_company,  # top-level import is fine too
+                )
 
                 matches = find_applications_by_company(conn, args.target)
 
@@ -288,12 +290,15 @@ def main() -> None:
                 elif len(matches) > 1:
                     print(f'Multiple applications match "{args.target}":')
                     for app in matches:
-                        print(f"[{app.id}] {app.company} — {app.role} (applied {app.date_applied})")
+                        print(
+                            f"[{app.id}] {app.company} — {app.role} "
+                            f"(applied {app.date_applied})"
+                        )
                     print("Please refine your query or use an explicit ID.")
                 else:
                     app = matches[0]
                     print(
-                        f'Updating application [{app.id}] {app.company} — {app.role} '
+                        f"Updating application [{app.id}] {app.company} — {app.role} "
                         f'to status "{args.status}".'
                     )
                     update_status(
@@ -303,7 +308,7 @@ def main() -> None:
                         last_action=args.last_action,
                     )
         elif args.command == "update":
-            # Determine the application ID: try integer first, otherwise resolve by company name.
+            # Determine app ID: try integer first, else resolve by company name.
             try:
                 app_id = int(args.target)
                 cur = conn.cursor()
@@ -324,7 +329,8 @@ def main() -> None:
                     print(f'Multiple applications match "{args.target}":')
                     for app in matches:
                         print(
-                            f"[{app.id}] {app.company} — {app.role} (applied {app.date_applied})"
+                            f"[{app.id}] {app.company} — {app.role} "
+                            f"(applied {app.date_applied})"
                         )
                     print("Please refine your query or use an explicit ID.")
                     return
@@ -364,7 +370,7 @@ def main() -> None:
 
             # Print context before applying update
             print(
-                f'Updating application [{row["id"]}] {row["company"]} — {row["role"]} '
+                f"Updating application [{row['id']}] {row['company']} — {row['role']} "
                 f"with updated fields: {', '.join(fields.keys())}."
             )
 

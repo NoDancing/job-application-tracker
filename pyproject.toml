@@ -19,29 +19,39 @@ Homepage = "https://github.com/NoDancing/job-application-tracker"
 Source = "https://github.com/NoDancing/job-application-tracker"
 Issues = "https://github.com/NoDancing/job-application-tracker/issues"
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.9.0",
+    "pip-audit>=2.10.0",
+    "pre-commit>=4.0.0",
+]
+
 # ----------------------------------------------------------------------
 # Build backend (standard modern Python packaging)
 # ----------------------------------------------------------------------
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=70.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 packages = ["jobapp"]
 
-# Ruff for linting
+# Ruff for linting and formatting
 [tool.ruff]
-select = ["E", "F", "W"]
-ignore = []
 line-length = 88
-exclude = ["tests"]
+target-version = "py310"
 
-# Black for formatting
-[tool.black]
-line-length = 88
-target-version = ["py310"]
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]  # E/W: pycodestyle, F: pyflakes, I: isort
+ignore = []
 
 # Pytest config
 [tool.pytest.ini_options]
 pythonpath = ["."]
 addopts = "-q"
+
+# Bandit security linting config
+[tool.bandit]
+exclude_dirs = ["tests"]
+skips = ["B101", "B608"]  # B101: assert_used, B608: hardcoded_sql (false positive)
