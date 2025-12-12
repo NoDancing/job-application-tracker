@@ -17,7 +17,7 @@ from typing import List, Optional, Tuple
 
 from .models import Application
 
-DEFAULT_DB_PATH = Path("applications.db")
+DEFAULT_DB_PATH = Path.home() / ".jobapp" / "applications.db"
 
 
 def get_connection(db_path: Path) -> sqlite3.Connection:
@@ -31,6 +31,7 @@ def get_connection(db_path: Path) -> sqlite3.Connection:
     Returns:
         sqlite3.Connection: An open connection to the database.
     """
+    db_path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(str(db_path))
     conn.row_factory = sqlite3.Row
     return conn
