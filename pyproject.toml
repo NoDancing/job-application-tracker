@@ -13,6 +13,7 @@ dependencies = []
 # This makes `jobapp` a real command-line tool
 [project.scripts]
 jobapp = "jobapp.cli:main"
+jobapp-tui = "jobapp.tui:run"
 
 [project.urls]
 Homepage = "https://github.com/NoDancing/job-application-tracker"
@@ -36,6 +37,10 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 packages = ["jobapp"]
+include-package-data = true
+
+[tool.setuptools.data-files]
+"share/man/man1" = ["man/jobapp.1"]
 
 # Ruff for linting and formatting
 [tool.ruff]
