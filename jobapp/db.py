@@ -155,6 +155,28 @@ def add_application(
     conn.commit()
     return cur.lastrowid
 
+def remove_application(conn: sqlite3.Connection, app_id: int) -> None:
+    """
+    Remove a job application from the database by ID.
+
+    Parameters:
+        conn (sqlite3.Connection): Open database connection.
+        app_id (int): ID of the application to delete.
+    """
+    cur = conn.cursor()
+    cur.execute(
+        """
+        DELETE FROM applications
+        WHERE id = ?
+        """,
+        (app_id,),
+    )
+
+    if cur.rowcount == 0:
+        print(f"No application with ID {app_id} exists.")
+    else:
+        conn.commit()
+        print(f"Removed application {app_id}.")
 
 def find_applications_by_company(
     conn: sqlite3.Connection,
