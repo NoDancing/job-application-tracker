@@ -358,10 +358,50 @@ def update_status(
 
 def stats_by_status(conn: sqlite3.Connection) -> None:
     """
-    Print a count of applications grouped by status.
-    Helpful for understanding pipeline distribution at a glance.
+    Print comprehensive statistics about job applications including:
+    - Total applications
+    - Applications this week/month
+    - Status breakdown
+    - Active vs inactive counts
+    - Response and success rates
     """
     cur = conn.cursor()
+
+    # Check if there are any applications
+    cur.execute("SELECT COUNT(*) as total FROM applications")
+    total = cur.fetchone()["total"]
+
+    if total == 0:
+        print("No applications in database.")
+        return
+
+    # Get current date for time-based stats
+    cur.execute("SELECT date('now') as today")
+    today = cur.fetchone()["today"]
+
+    # Calculate this week (last 7 days)
+    cur.execute(
+        """
+        SELECT COUNT(*) as count
+        FROM applications
+        WHERE julianday(?) - julianday(date_applied) <= 7
+        """,
+        (today,),
+    )
+    this_week = cur.fetchone()["count"]
+
+    # Calculate this month
+    cur.execute(
+        """
+        SELECT COUNT(*) as count
+        FROM applications
+        WHERE strftime('%Y-%m', date_applied) = strftime('%Y-%m', ?)
+        """,
+        (today,),
+    )
+    this_month = cur.fetchone()["count"]
+
+    # Get counts by status
     cur.execute(
         """
         SELECT status, COUNT(*) AS count
@@ -370,15 +410,72 @@ def stats_by_status(conn: sqlite3.Connection) -> None:
         ORDER BY count DESC
         """
     )
+    status_rows = cur.fetchall()
+    status_counts = {row["status"]: row["count"] for row in status_rows}
 
-    rows = cur.fetchall()
-    if not rows:
-        print("No applications in database.")
-        return
+    # Define status categories
+    active_statuses = {"Applied", "Recruiter Screen", "OA", "Interview", "Offer"}
+    inactive_statuses = {"Rejected", "Ghosted", "Withdrawn"}
 
-    print("Applications by status:")
-    for row in rows:
-        print(f"  {row['status']}: {row['count']}")
+    # Calculate category counts
+    active_count = sum(status_counts.get(s, 0) for s in active_statuses)
+    inactive_count = sum(status_counts.get(s, 0) for s in inactive_statuses)
+    rejected_count = status_counts.get("Rejected", 0)
+    ghosted_count = status_counts.get("Ghosted", 0)
+    interview_count = status_counts.get("Interview", 0) + status_counts.get("Offer", 0)
+    offer_count = status_counts.get("Offer", 0)
+
+    # Calculate rates
+    # Response rate: moved past "Applied" status
+    non_applied_count = total - status_counts.get("Applied", 0)
+    response_rate = (non_applied_count / total * 100) if total > 0 else 0
+
+    # Success rate: resulted in offers
+    success_rate = (offer_count / total * 100) if total > 0 else 0
+
+    # Print comprehensive stats
+    print("=" * 50)
+    print("JOB APPLICATION STATISTICS")
+    print("=" * 50)
+
+    print("\nOVERALL:")
+    print(f"  Total applications: {total}")
+    print(f"  This week (last 7 days): {this_week}")
+    print(f"  This month: {this_month}")
+
+    print("\nSTATUS BREAKDOWN:")
+    # Print all statuses in a meaningful order
+    status_order = [
+        "Applied",
+        "Recruiter Screen",
+        "OA",
+        "Interview",
+        "Offer",
+        "Rejected",
+        "Ghosted",
+        "Withdrawn",
+    ]
+    for status in status_order:
+        count = status_counts.get(status, 0)
+        if count > 0:  # Only show statuses that have applications
+            print(f"  {status}: {count}")
+
+    print("\nACTIVE vs INACTIVE:")
+    print(f"  Active (pending): {active_count}")
+    print(f"  Inactive (closed): {inactive_count}")
+    print(f"    - Rejected: {rejected_count}")
+    print(f"    - Ghosted: {ghosted_count}")
+    print(f"    - Withdrawn: {status_counts.get('Withdrawn', 0)}")
+
+    print("\nPROGRESS:")
+    print(f"  Interviews: {interview_count}")
+    print(f"  Offers: {offer_count}")
+
+    print("\nRATES:")
+    print(f"  Response rate: {response_rate:.1f}% (moved past 'Applied')")
+    print(f"  Success rate: {success_rate:.1f}% (received offers)")
+
+    print("=" * 50)
 
 
 def followups(conn: sqlite3.Connection, days: int) -> List[Application]:
