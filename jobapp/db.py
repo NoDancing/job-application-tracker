@@ -155,6 +155,7 @@ def add_application(
     conn.commit()
     return cur.lastrowid
 
+
 def remove_application(conn: sqlite3.Connection, app_id: int) -> None:
     """
     Remove a job application from the database by ID.
@@ -177,6 +178,7 @@ def remove_application(conn: sqlite3.Connection, app_id: int) -> None:
     else:
         conn.commit()
         print(f"Removed application {app_id}.")
+
 
 def find_applications_by_company(
     conn: sqlite3.Connection,

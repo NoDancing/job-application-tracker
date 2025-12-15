@@ -245,6 +245,7 @@ def test_cli_update_ambiguous_company_refuses_to_guess(tmp_path: Path, capsys) -
     finally:
         conn.close()
 
+
 def test_cli_remove_by_id_deletes_row(tmp_path: Path, capsys) -> None:
     """`jobapp remove <id>` should delete the selected application."""
     db_path = tmp_path / "cli_remove_by_id.db"
