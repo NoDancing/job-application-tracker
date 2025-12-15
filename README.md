@@ -31,8 +31,11 @@ The project is designed to support:
 
 - Add new job applications with standardized fields
 - Update application status and timeline events
+- Update any field of an application (company, role, priority, etc.)
+- Remove applications by ID
 - Search by keyword (company or role)
 - Filter and list active applications
+- View comprehensive statistics and analytics
 - Identify stale applications requiring follow-up
 - Export all data to CSV for spreadsheet analysis
 - Tested with `pytest`
@@ -125,6 +128,34 @@ jobapp list --company "Panic"
 ```bash
 jobapp update-status 12 "Interview" \
   --last-action "2025-12-18 — Scheduled technical screen"
+```
+
+### Update Application Fields
+
+Update any field(s) of an existing application:
+
+```bash
+jobapp update 12 \
+  --priority 1 \
+  --notes "Updated after positive initial conversation"
+
+jobapp update "Flatiron" \
+  --status "Interview" \
+  --location "Remote"
+```
+
+### Remove an Application
+
+```bash
+jobapp remove 12
+```
+
+### View Statistics
+
+Display comprehensive analytics about your applications:
+
+```bash
+jobapp stats
 ```
 
 ### Follow-Up Recommendations

@@ -136,6 +136,33 @@ jobapp export <output.csv> --active-only
 
 ---
 
+## stats
+Display comprehensive statistics about job applications.
+
+```
+jobapp stats
+```
+
+Shows:
+- Total application count
+- Applications submitted this week and this month
+- Breakdown by status
+- Active vs inactive counts
+- Response rate and success metrics
+
+---
+
+## remove
+Remove an application by ID.
+
+```
+jobapp remove <ID>
+```
+
+Permanently deletes the application record from the database.
+
+---
+
 # DATA MODEL
 Each application record includes:
 - Company
@@ -187,6 +214,26 @@ Update status after an interview:
 ```
 jobapp update-status 12 "Interview" \
   --last-action "2025-12-18 — Scheduled technical screen"
+```
+
+Update application fields:
+
+```
+jobapp update 12 \
+  --priority 1 \
+  --notes "Updated after positive initial conversation"
+```
+
+View application statistics:
+
+```
+jobapp stats
+```
+
+Remove an application:
+
+```
+jobapp remove 12
 ```
 
 # DESIGN NOTES
