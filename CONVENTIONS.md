@@ -133,10 +133,20 @@ Pattern:
 
 Rules:
 
-- `<ID>` is preferred when known.  
-- If `<company-substring>` is used and matches exactly one application, it is accepted.  
-- If multiple applications match, the command must refuse to proceed.  
+- `<ID>` is preferred when known.
+- If `<company-substring>` is used and matches exactly one application, it is accepted.
+- If multiple applications match, the command must refuse to proceed.
 - Only the fields explicitly passed via flags will be updated; all others remain unchanged.
+
+### 7.4 Remove an application
+
+Pattern:
+
+`jobapp remove <ID>`
+
+Where `<ID>` is the application ID (integer).
+
+This permanently deletes the application record from the database.
 
 ---
 
