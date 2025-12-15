@@ -244,3 +244,77 @@ def test_cli_update_ambiguous_company_refuses_to_guess(tmp_path: Path, capsys) -
         assert {app.priority for app in apps} == {2}
     finally:
         conn.close()
+
+def test_cli_remove_by_id_deletes_row(tmp_path: Path, capsys) -> None:
+    """`jobapp remove <id>` should delete the selected application."""
+    db_path = tmp_path / "cli_remove_by_id.db"
+
+    # Seed a single application
+    conn = get_connection(db_path)
+    init_db(conn)
+    app_id = add_application(
+        conn=conn,
+        company="DeleteMeCo",
+        role="Intern",
+        job_link=None,
+        location=None,
+        date_applied="2025-01-10",
+        source=None,
+        status="Applied",
+        priority=2,
+        notes=None,
+    )
+    conn.close()
+
+    # CLI: jobapp --db-path <db> remove <id>
+    sys.argv = [
+        "jobapp",
+        "--db-path",
+        str(db_path),
+        "remove",
+        str(app_id),
+    ]
+    cli.main()
+    captured = capsys.readouterr()
+
+    # Should print an informative message
+    assert f"Removed application {app_id}." in captured.out
+
+    # Verify DB contents: row is gone
+    conn = get_connection(db_path)
+    try:
+        apps = list_applications(conn, company=None, status=None, active_only=False)
+        assert len(apps) == 0
+    finally:
+        conn.close()
+
+
+def test_cli_remove_nonexistent_id_prints_message(tmp_path: Path, capsys) -> None:
+    """`jobapp remove <id>` should not crash for missing IDs and should print a message."""
+    db_path = tmp_path / "cli_remove_missing.db"
+
+    # Empty DB
+    conn = get_connection(db_path)
+    init_db(conn)
+    conn.close()
+
+    # CLI: jobapp --db-path <db> remove 999
+    sys.argv = [
+        "jobapp",
+        "--db-path",
+        str(db_path),
+        "remove",
+        "999",
+    ]
+    cli.main()
+    captured = capsys.readouterr()
+
+    assert "No application with ID 999 exists." in captured.out
+
+    # DB should remain empty
+    conn = get_connection(db_path)
+    try:
+        apps = list_applications(conn, company=None, status=None, active_only=False)
+        assert len(apps) == 0
+    finally:
+        conn.close()
