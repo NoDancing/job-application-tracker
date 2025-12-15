@@ -21,6 +21,7 @@ from .db import (
     get_connection,
     init_db,
     list_applications,
+    remove_application,
     run_init,
     search_applications,
     stats_by_status,
@@ -70,6 +71,7 @@ def parse_args() -> argparse.Namespace:
         list           List applications (with filters).
         stats          Show summary statistics grouped by status.
         followups      Identify stale applications needing follow-up.
+        remove         Remove an application by ID.
         update-status  Update an application's status and optional last_action.
         update         Update fields of an application by ID or company name.
     """
@@ -166,6 +168,16 @@ def parse_args() -> argparse.Namespace:
         help="Days since application before flagging for follow-up (default: 7).",
     )
 
+    # remove
+    p_remove = subparsers.add_parser(
+        "remove",
+        help="Remove an application by ID.",
+    )
+    p_remove.add_argument(
+        "target",
+        help="Application ID (integer).",
+    )
+
     # update-status
     p_update = subparsers.add_parser(
         "update-status",
@@ -233,6 +245,10 @@ def main() -> None:
                 notes=args.notes,
             )
             print(f"Added new application with ID {app_id}.")
+
+        elif args.command == "remove":
+            app_id = int(args.target)
+            remove_application(conn=conn, app_id=app_id)
 
         elif args.command == "list":
             apps = list_applications(
