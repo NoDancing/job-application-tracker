@@ -7,9 +7,9 @@ from jobapp.db import (
     export_applications_to_csv,
     followups,
     list_applications,
+    remove_application,
     search_applications,
     update_status,
-    remove_application,
 )
 from jobapp.models import Application
 

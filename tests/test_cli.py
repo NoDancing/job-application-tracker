@@ -291,7 +291,7 @@ def test_cli_remove_by_id_deletes_row(tmp_path: Path, capsys) -> None:
 
 
 def test_cli_remove_nonexistent_id_prints_message(tmp_path: Path, capsys) -> None:
-    """`jobapp remove <id>` should not crash for missing IDs and should print a message."""
+    """`jobapp remove <id>` should not crash for missing ID and should print message."""
     db_path = tmp_path / "cli_remove_missing.db"
 
     # Empty DB
