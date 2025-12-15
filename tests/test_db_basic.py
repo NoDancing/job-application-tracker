@@ -9,6 +9,7 @@ from jobapp.db import (
     list_applications,
     search_applications,
     update_status,
+    remove_application,
 )
 from jobapp.models import Application
 
@@ -292,3 +293,48 @@ def test_export_applications_to_csv(tmp_path: Path, conn) -> None:
     assert len(rows) == 2
     companies = {row["company"] for row in rows}
     assert companies == {"ExportCo1", "ExportCo2"}
+
+
+def test_remove_application_deletes_row(conn) -> None:
+    """
+    remove_application() should delete an existing application by ID.
+    """
+    app_id = add_application(
+        conn=conn,
+        company="DeleteMeCo",
+        role="Intern",
+        job_link=None,
+        location=None,
+        date_applied="2025-01-10",
+        source=None,
+        status="Applied",
+        priority=2,
+        notes=None,
+    )
+
+    # Sanity check: row exists
+    cur = conn.cursor()
+    cur.execute("SELECT COUNT(*) AS c FROM applications")
+    assert cur.fetchone()["c"] == 1
+
+    remove_application(conn=conn, app_id=app_id)
+
+    # Row should be gone
+    cur.execute("SELECT COUNT(*) AS c FROM applications")
+    assert cur.fetchone()["c"] == 0
+
+
+def test_remove_application_nonexistent_id_does_not_crash(conn, capsys) -> None:
+    """
+    remove_application() should not crash when the ID does not exist and should
+    print a helpful message.
+    """
+    remove_application(conn=conn, app_id=999)
+
+    captured = capsys.readouterr()
+    assert "No application with ID 999 exists." in captured.out
+
+    # Database should still be empty
+    cur = conn.cursor()
+    cur.execute("SELECT COUNT(*) AS c FROM applications")
+    assert cur.fetchone()["c"] == 0
