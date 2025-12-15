@@ -361,7 +361,7 @@ def stats_by_status(conn: sqlite3.Connection) -> None:
         FROM applications
         WHERE julianday(?) - julianday(date_applied) <= 7
         """,
-        (today,)
+        (today,),
     )
     this_week = cur.fetchone()["count"]
 
@@ -372,7 +372,7 @@ def stats_by_status(conn: sqlite3.Connection) -> None:
         FROM applications
         WHERE strftime('%Y-%m', date_applied) = strftime('%Y-%m', ?)
         """,
-        (today,)
+        (today,),
     )
     this_month = cur.fetchone()["count"]
 
@@ -420,8 +420,16 @@ def stats_by_status(conn: sqlite3.Connection) -> None:
 
     print("\nSTATUS BREAKDOWN:")
     # Print all statuses in a meaningful order
-    status_order = ["Applied", "Recruiter Screen", "OA", "Interview", "Offer",
-                    "Rejected", "Ghosted", "Withdrawn"]
+    status_order = [
+        "Applied",
+        "Recruiter Screen",
+        "OA",
+        "Interview",
+        "Offer",
+        "Rejected",
+        "Ghosted",
+        "Withdrawn",
+    ]
     for status in status_order:
         count = status_counts.get(status, 0)
         if count > 0:  # Only show statuses that have applications
